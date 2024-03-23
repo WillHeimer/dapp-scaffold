@@ -14,8 +14,19 @@ module.exports = async (req, res) => {
     });
     await client.connect();
 
-    // Access the database and collection
-    const database = client.db("your_database_name");
+    // Access the admin database to check if the target database exists
+    const adminDb = client.db("admin");
+    const databases = await adminDb.admin().listDatabases();
+    const dbNames = databases.databases.map((db) => db.name);
+    const targetDbName = "tokenlock";
+
+    // Check if the target database exists, create it if it doesn't
+    if (!dbNames.includes(targetDbName)) {
+      await adminDb.admin().createDatabase(targetDbName);
+    }
+
+    // Access the target database and collection
+    const database = client.db(targetDbName);
     const collection = database.collection("transactions");
 
     // Insert the transaction data into the collection
