@@ -13,17 +13,20 @@ export const BasicsView: FC = ({}) => {
         </p>
         {/* CONTENT GOES HERE */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-          <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col items-center">
+          <div
+            style={{ backgroundColor: "#0000ff" }}
+            className="shadow-lg rounded-lg p-5 flex flex-col items-center"
+          >
             <h2 className="text-lg font-bold">3 Month Pool</h2>
             <p className="mt-2">Reward: 5%</p>
             <p className="mt-2">Delegated: 50,000,000</p>
           </div>
-          <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col items-center">
+          <div className="shadow-lg rounded-lg p-5 flex flex-col items-center">
             <h2 className="text-lg font-bold">6 Month Pool</h2>
             <p className="mt-2">Reward: 10%</p>
             <p className="mt-2">Delegated: 100,000,000</p>
           </div>
-          <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col items-center">
+          <div className="shadow-lg rounded-lg p-5 flex flex-col items-center">
             <h2 className="text-lg font-bold">12 Month Pool</h2>
             <p className="mt-2">Reward: 20%</p>
             <p className="mt-2">Delegated: 200,000,000</p>
