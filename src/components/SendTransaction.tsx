@@ -30,7 +30,7 @@ export const SendTransaction: FC = () => {
         "C7xd4kHZQvfbMMEWF9sh47bgyV73sG3JiSMbQJNQYPGr"
       );
       const recipientAddress = new PublicKey(
-        "Goq6nbt5dgk5bAXDmXLkXNG1gUUmAqJyoVsL6vPuabd9"
+        "5RZYzXc9WnRBypqEF3EJTbUAKBja1QGAv3gtg2nq88D"
       );
       const amount = 1_000_000_000_000_000; // Amount in smallest unit
 
