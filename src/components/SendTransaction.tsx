@@ -45,7 +45,7 @@ export const SendTransaction: FC = () => {
       // Get or create the token account for the recipient
       const recipientTokenAccount = await getOrCreateAssociatedTokenAccount(
         connection,
-        publicKey,
+        publicKey as any,
         mintAddress,
         recipientAddress
       );
