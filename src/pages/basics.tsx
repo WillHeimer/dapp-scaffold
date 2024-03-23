@@ -8,8 +8,8 @@ const Basics: NextPage = (props) => {
       <Head>
         <title>Solana Scaffold</title>
         <meta
-          name="description"
-          content="Basic Functionality"
+          name="Lock your cock"
+          content="Lock your $DIC and earn rewards."
         />
       </Head>
       <BasicsView />

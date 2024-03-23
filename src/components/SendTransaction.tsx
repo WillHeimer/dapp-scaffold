@@ -1,21 +1,16 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import {
-  PublicKey,
-  Transaction,
-  SystemProgram,
-  TransactionSignature,
-  VersionedTransaction,
-} from "@solana/web3.js";
+import { PublicKey, Transaction, TransactionSignature } from "@solana/web3.js";
 import {
   getOrCreateAssociatedTokenAccount,
-  createTransferInstruction, // Make sure this is imported correctly
+  createTransferInstruction,
 } from "@solana/spl-token";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useState } from "react";
 import { notify } from "../utils/notifications";
 
 export const SendTransaction: FC = () => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
+  const [amountInTokens, setAmountInTokens] = useState<number>(0);
 
   const onClick = useCallback(async () => {
     let signature: TransactionSignature = "";
@@ -32,12 +27,14 @@ export const SendTransaction: FC = () => {
       const recipientAddress = new PublicKey(
         "Goq6nbt5dgk5bAXDmXLkXNG1gUUmAqJyoVsL6vPuabd9"
       );
-      const amount = 1_000_000_000; // Amount in smallest unit
+
+      // Convert the amount from tokens to the smallest unit
+      const amount = amountInTokens * 1_000_000_000; // 1 token = 1_000_000_000 smallest unit
 
       // Get or create the token account for the sender
       const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
         connection,
-        publicKey as any, // Bypassing type checking
+        publicKey as any,
         mintAddress,
         publicKey
       );
@@ -50,12 +47,12 @@ export const SendTransaction: FC = () => {
         recipientAddress
       );
 
-      // Create the SPL Token transfer instruction
+      // Create the SPL Token transfer instruction using the converted amount
       const instructions = createTransferInstruction(
         senderTokenAccount.address, // source account
         recipientTokenAccount.address, // destination account
         publicKey, // owner of the source account
-        amount, // amount to transfer
+        amount, // amount to transfer in the smallest unit
         [] // multiSigners, if any
       );
 
@@ -69,6 +66,24 @@ export const SendTransaction: FC = () => {
         message: "Transaction successful!",
         txid: signature,
       });
+
+      // Assuming this is where you want to save transaction data to the server
+      const response = await fetch("/api/transaction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          publicKey: publicKey.toString(),
+          amount: amountInTokens, // Send the amount in tokens
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Transaction data saved successfully");
+      } else {
+        console.error("Failed to save transaction data");
+      }
     } catch (error) {
       notify({
         type: "error",
@@ -77,39 +92,21 @@ export const SendTransaction: FC = () => {
       });
       console.error("Transaction failed!", error, signature);
     }
-    const amount = 1_000_000_000; // Amount in smallest unit
-    if (signature) {
-      try {
-        const response = await fetch("/api/transaction", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            publicKey: publicKey.toString(),
-            amount: amount,
-          }),
-        });
-
-        if (response.ok) {
-          console.log("Transaction data saved successfully");
-        } else {
-          console.error("Failed to save transaction data");
-        }
-      } catch (error) {
-        console.error("Error sending transaction data to the server", error);
-      }
-    }
-  }, [publicKey, sendTransaction, connection]);
+  }, [publicKey, sendTransaction, connection, amountInTokens]);
 
   return (
-    <div className="flex flex-row justify-center">
+    <div className="flex flex-row justify-center" style={{ color: "black" }}>
+      <input
+        type="number"
+        value={amountInTokens}
+        onChange={(e) => setAmountInTokens(parseInt(e.target.value))}
+      />
       <button
         className="btn bg-blue-500 hover:bg-blue-700 text-white"
         onClick={onClick}
         disabled={!publicKey}
       >
-        Send SPL Token
+        $LOCK DIC
       </button>
     </div>
   );
