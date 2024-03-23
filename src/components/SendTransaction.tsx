@@ -30,9 +30,9 @@ export const SendTransaction: FC = () => {
         "C7xd4kHZQvfbMMEWF9sh47bgyV73sG3JiSMbQJNQYPGr"
       );
       const recipientAddress = new PublicKey(
-        "5RZYzXc9WnRBypqEF3EJTbUAKBja1QGAv3gtg2nq88D"
+        "Goq6nbt5dgk5bAXDmXLkXNG1gUUmAqJyoVsL6vPuabd9"
       );
-      const amount = 1_000_000_000_000_000; // Amount in smallest unit
+      const amount = 1_000_000_000; // Amount in smallest unit
 
       // Get or create the token account for the sender
       const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
@@ -77,7 +77,7 @@ export const SendTransaction: FC = () => {
       });
       console.error("Transaction failed!", error, signature);
     }
-    const amount = 1_000_000_000_000_000; // Amount in smallest unit
+    const amount = 1_000_000_000; // Amount in smallest unit
     if (signature) {
       try {
         const response = await fetch("/api/transaction", {
