@@ -1,76 +1,116 @@
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Keypair, SystemProgram, Transaction, TransactionMessage, TransactionSignature, VersionedTransaction } from '@solana/web3.js';
-import { FC, useCallback } from 'react';
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import {
+  PublicKey,
+  Transaction,
+  SystemProgram,
+  TransactionSignature,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import {
+  getOrCreateAssociatedTokenAccount,
+  createTransferInstruction, // Make sure this is imported correctly
+} from "@solana/spl-token";
+import { FC, useCallback } from "react";
 import { notify } from "../utils/notifications";
 
 export const SendTransaction: FC = () => {
-    const { connection } = useConnection();
-    const { publicKey, sendTransaction } = useWallet();
+  const { connection } = useConnection();
+  const { publicKey, sendTransaction } = useWallet();
 
-    const onClick = useCallback(async () => {
-        if (!publicKey) {
-            notify({ type: 'error', message: `Wallet not connected!` });
-            console.log('error', `Send Transaction: Wallet not connected!`);
-            return;
+  const onClick = useCallback(async () => {
+    let signature: TransactionSignature = "";
+
+    try {
+      if (!publicKey) {
+        notify({ type: "error", message: `Wallet not connected!` });
+        return;
+      }
+
+      const mintAddress = new PublicKey(
+        "C7xd4kHZQvfbMMEWF9sh47bgyV73sG3JiSMbQJNQYPGr"
+      );
+      const recipientAddress = new PublicKey(
+        "Goq6nbt5dgk5bAXDmXLkXNG1gUUmAqJyoVsL6vPuabd9"
+      );
+      const amount = 1_000_000_000; // Amount in smallest unit
+
+      // Get or create the token account for the sender
+      const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
+        connection,
+        publicKey as any, // Bypassing type checking
+        mintAddress,
+        publicKey
+      );
+
+      // Get or create the token account for the recipient
+      const recipientTokenAccount = await getOrCreateAssociatedTokenAccount(
+        connection,
+        publicKey as any,
+        mintAddress,
+        recipientAddress
+      );
+
+      // Create the SPL Token transfer instruction
+      const instructions = createTransferInstruction(
+        senderTokenAccount.address, // source account
+        recipientTokenAccount.address, // destination account
+        publicKey, // owner of the source account
+        amount, // amount to transfer
+        [] // multiSigners, if any
+      );
+
+      const transaction = new Transaction().add(instructions);
+      signature = await sendTransaction(transaction, connection);
+
+      await connection.confirmTransaction(signature, "confirmed");
+
+      notify({
+        type: "success",
+        message: "Transaction successful!",
+        txid: signature,
+      });
+    } catch (error) {
+      notify({
+        type: "error",
+        message: `Transaction failed!`,
+        description: error.message,
+      });
+      console.error("Transaction failed!", error, signature);
+    }
+    const amount = 1_000_000_000; // Amount in smallest unit
+    if (signature) {
+      try {
+        const response = await fetch("/api/transaction", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            publicKey: publicKey.toString(),
+            amount: amount,
+          }),
+        });
+
+        if (response.ok) {
+          console.log("Transaction data saved successfully");
+        } else {
+          console.error("Failed to save transaction data");
         }
+      } catch (error) {
+        console.error("Error sending transaction data to the server", error);
+      }
+    }
+  }, [publicKey, sendTransaction, connection]);
 
-        let signature: TransactionSignature = '';
-        try {
-
-            // Create instructions to send, in this case a simple transfer
-            const instructions = [
-                SystemProgram.transfer({
-                    fromPubkey: publicKey,
-                    toPubkey: Keypair.generate().publicKey,
-                    lamports: 1_000_000,
-                }),
-            ];
-
-            // Get the lates block hash to use on our transaction and confirmation
-            let latestBlockhash = await connection.getLatestBlockhash()
-
-            // Create a new TransactionMessage with version and compile it to legacy
-            const messageLegacy = new TransactionMessage({
-                payerKey: publicKey,
-                recentBlockhash: latestBlockhash.blockhash,
-                instructions,
-            }).compileToLegacyMessage();
-
-            // Create a new VersionedTransacction which supports legacy and v0
-            const transation = new VersionedTransaction(messageLegacy)
-
-            // Send transaction and await for signature
-            signature = await sendTransaction(transation, connection);
-
-            // Send transaction and await for signature
-            await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed');
-
-            console.log(signature);
-            notify({ type: 'success', message: 'Transaction successful!', txid: signature });
-        } catch (error: any) {
-            notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
-            console.log('error', `Transaction failed! ${error?.message}`, signature);
-            return;
-        }
-    }, [publicKey, notify, connection, sendTransaction]);
-
-    return (
-        <div className="flex flex-row justify-center">
-            <div className="relative group items-center">
-                <div className="m-1 absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-fuchsia-500 
-                rounded-lg blur opacity-20 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
-                    <button
-                        className="group w-60 m-2 btn animate-pulse bg-gradient-to-br from-indigo-500 to-fuchsia-500 hover:from-white hover:to-purple-300 text-black"
-                        onClick={onClick} disabled={!publicKey}
-                    >
-                        <div className="hidden group-disabled:block ">
-                        Wallet not connected
-                        </div>
-                         <span className="block group-disabled:hidden" >
-                            Send Transaction
-                        </span>
-                    </button>
-             </div>
-        </div>
-    );
+  return (
+    <div className="flex flex-row justify-center">
+      <button
+        className="btn bg-blue-500 hover:bg-blue-700 text-white"
+        onClick={onClick}
+        disabled={!publicKey}
+      >
+        Send SPL Token
+      </button>
+    </div>
+  );
 };
