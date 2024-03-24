@@ -106,7 +106,7 @@ Amount: {amount.toLocaleString(undefined, {maximumFractionDigits: 0})} $DIC
     onClick={onClick}
     disabled={!publicKey}
     style={{
-      background: 'linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(255,154,0,1) 50%, rgba(208,222,33,1) 100%)',
+      background: 'rgb(128, 4, 230)',
       boxShadow: '4px 4px 0px 0px rgba(0,0,0,0.75)',
       color: 'white',
       fontFamily: '"Courier New", Courier, monospace',
@@ -116,7 +116,7 @@ Amount: {amount.toLocaleString(undefined, {maximumFractionDigits: 0})} $DIC
       cursor: publicKey ? 'pointer' : 'default',
     }}
   >
-    LOCK COCK
+    TESTING DO NOT USE
   </button>
 </div>
 

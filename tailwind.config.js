@@ -12,10 +12,11 @@ module.exports = {
   daisyui: {
     styled: true,
     themes: [
-      {
+      {    
+
         'retro': { 
           fontFamily: {
-            display: ['"Press Start 2P", cursive'],
+            display: ['"Courier New", Courier, monospace'],
             body: ['"VT323", monospace'],
           },
           'primary': '#ff00ff',           /* Primary color */

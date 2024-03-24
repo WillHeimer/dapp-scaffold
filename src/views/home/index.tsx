@@ -52,17 +52,17 @@ export const HomeView: FC = ({ }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-2">
           <RewardPoolCard
             title="90 Day Lock"
-            description="This is the first reward pool. Participate to earn rewards."
+            description="Fee Allocation: 25% Deposit Ratio 4 - 1 Rewards 25,000,000"
             imageSrc={day180LockImage}
           />
           <RewardPoolCard
             title="180 Day Lock"
-            description="This is the second reward pool. Greater rewards await."
+            description="Fee Allocation: 50% Deposit Ration 2 - 1 Rewards 60,000,000"
             imageSrc={day90LockImage}
           />
           <RewardPoolCard
             title="360 Day Lock"
-            description="The third reward pool offers exclusive benefits."
+            description="Fee Allocation: 100% Deposit Ratio: 1 - 1 Rewards 125,000,000"
             imageSrc={day360LockImage}
           />
         </div>
