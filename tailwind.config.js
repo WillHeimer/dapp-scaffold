@@ -11,39 +11,38 @@ module.exports = {
   ],
   daisyui: {
     styled: true,
-    // TODO: Theme needs works
     themes: [
       {
-        'solana': { 
+        'retro': { 
           fontFamily: {
-            display: ['PT Mono, monospace'],
-            body: ['Inter, sans-serif'],
+            display: ['"Press Start 2P", cursive'],
+            body: ['"VT323", monospace'],
           },
-          'primary': '#000000',           /* Primary color */
-          'primary-focus': '#9945FF',     /* Primary color - focused */
+          'primary': '#ff00ff',           /* Primary color */
+          'primary-focus': '#ff77aa',     /* Primary color - focused */
           'primary-content': '#ffffff',   /* Foreground content color to use on primary color */
 
-          'secondary': '#808080',         /* Secondary color */
-          'secondary-focus': '#f3cc30',   /* Secondary color - focused */
+          'secondary': '#00ffff',         /* Secondary color */
+          'secondary-focus': '#33cccc',   /* Secondary color - focused */
           'secondary-content': '#ffffff', /* Foreground content color to use on secondary color */
 
-          'accent': '#33a382',            /* Accent color */
-          'accent-focus': '#2aa79b',      /* Accent color - focused */
-          'accent-content': '#ffffff',    /* Foreground content color to use on accent color */
+          'accent': '#ffff00',            /* Accent color */
+          'accent-focus': '#cccc00',      /* Accent color - focused */
+          'accent-content': '#333333',    /* Foreground content color to use on accent color */
 
-          'neutral': '#2b2b2b',           /* Neutral color */
-          'neutral-focus': '#2a2e37',     /* Neutral color - focused */
+          'neutral': '#33334d',           /* Neutral color */
+          'neutral-focus': '#2a2a40',     /* Neutral color - focused */
           'neutral-content': '#ffffff',   /* Foreground content color to use on neutral color */
 
-          'base-100': '#000000',          /* Base color of page, used for blank backgrounds */
-          'base-200': '#35363a',          /* Base color, a little darker */
-          'base-300': '#222222',          /* Base color, even more darker */
-          'base-content': '#f9fafb',      /* Foreground content color to use on base color */
+          'base-100': '#3f3f50',          /* Base color of page, used for blank backgrounds */
+          'base-200': '#525266',          /* Base color, a little darker */
+          'base-300': '#6f6f80',          /* Base color, even more darker */
+          'base-content': '#e0e0e0',      /* Foreground content color to use on base color */
 
-          'info': '#2094f3',              /* Info */
-          'success': '#009485',           /* Success */
-          'warning': '#ff9900',           /* Warning */
-          'error': '#ff5724',             /* Error */
+          'info': '#76daff',              /* Info */
+          'success': '#99ff66',           /* Success */
+          'warning': '#ffcc33',           /* Warning */
+          'error': '#ff6666',             /* Error */
         },
       },
       // backup themes:

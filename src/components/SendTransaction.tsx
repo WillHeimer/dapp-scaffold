@@ -1,48 +1,49 @@
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useState, FC, useEffect, useCallback } from 'react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {
   PublicKey,
   Transaction,
-  SystemProgram,
   TransactionSignature,
-  VersionedTransaction,
-} from "@solana/web3.js";
+} from '@solana/web3.js';
 import {
   getOrCreateAssociatedTokenAccount,
-  createTransferInstruction, // Make sure this is imported correctly
-} from "@solana/spl-token";
-import { FC, useCallback } from "react";
-import { notify } from "../utils/notifications";
+  createTransferInstruction,
+} from '@solana/spl-token';
+import { notify } from '../utils/notifications';
+import useC7TokenBalanceStore from '../stores/useC7TokenBalanceStore'; // Update this path accordingly
 
 export const SendTransaction: FC = () => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
+  const { balance, getC7TokenBalance } = useC7TokenBalanceStore();
+  const [amount, setAmount] = useState<number>(0); // Default amount set to 0
+
+  // Effect to get the user's C7 token balance
+  useEffect(() => {
+    if (publicKey && connection) {
+      getC7TokenBalance(publicKey, connection);
+    }
+  }, [publicKey, connection, getC7TokenBalance]);
 
   const onClick = useCallback(async () => {
     let signature: TransactionSignature = "";
 
     try {
       if (!publicKey) {
-        notify({ type: "error", message: `Wallet not connected!` });
+        notify({ type: 'error', message: `Wallet not connected!` });
         return;
       }
 
-      const mintAddress = new PublicKey(
-        "C7xd4kHZQvfbMMEWF9sh47bgyV73sG3JiSMbQJNQYPGr"
-      );
-      const recipientAddress = new PublicKey(
-        "Goq6nbt5dgk5bAXDmXLkXNG1gUUmAqJyoVsL6vPuabd9"
-      );
-      const amount = 1_000_000_000; // Amount in smallest unit
+      const mintAddress = new PublicKey("C7xd4kHZQvfbMMEWF9sh47bgyV73sG3JiSMbQJNQYPGr");
+      const recipientAddress = new PublicKey("Goq6nbt5dgk5bAXDmXLkXNG1gUUmAqJyoVsL6vPuabd9");
 
-      // Get or create the token account for the sender
       const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
         connection,
-        publicKey as any, // Bypassing type checking
+        publicKey as any,
         mintAddress,
         publicKey
       );
 
-      // Get or create the token account for the recipient
       const recipientTokenAccount = await getOrCreateAssociatedTokenAccount(
         connection,
         publicKey as any,
@@ -50,13 +51,12 @@ export const SendTransaction: FC = () => {
         recipientAddress
       );
 
-      // Create the SPL Token transfer instruction
       const instructions = createTransferInstruction(
-        senderTokenAccount.address, // source account
-        recipientTokenAccount.address, // destination account
-        publicKey, // owner of the source account
-        amount, // amount to transfer
-        [] // multiSigners, if any
+        senderTokenAccount.address,
+        recipientTokenAccount.address,
+        publicKey,
+        amount * Math.pow(10, 9), // Adjusting amount to token's decimal places
+        []
       );
 
       const transaction = new Transaction().add(instructions);
@@ -77,40 +77,48 @@ export const SendTransaction: FC = () => {
       });
       console.error("Transaction failed!", error, signature);
     }
-    const amount = 1_000_000_000; // Amount in smallest unit
-    if (signature) {
-      try {
-        const response = await fetch("/api/transaction", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            publicKey: publicKey.toString(),
-            amount: amount,
-          }),
-        });
-
-        if (response.ok) {
-          console.log("Transaction data saved successfully");
-        } else {
-          console.error("Failed to save transaction data");
-        }
-      } catch (error) {
-        console.error("Error sending transaction data to the server", error);
-      }
-    }
-  }, [publicKey, sendTransaction, connection]);
+  }, [amount, publicKey, sendTransaction, connection]);
 
   return (
-    <div className="flex flex-row justify-center">
-      <button
-        className="btn bg-blue-500 hover:bg-blue-700 text-white"
-        onClick={onClick}
-        disabled={!publicKey}
-      >
-        Send SPL Token
-      </button>
-    </div>
+<div className="flex flex-col items-center">
+<div style={{ fontFamily: "Courier New, Courier, monospace" }} className="text-lg font-semibold mb-2">
+
+Amount: {amount.toLocaleString(undefined, {maximumFractionDigits: 0})} $DIC
+
+</div>
+  <input
+    type="range"
+    min="0"
+    max={balance}
+    value={amount}
+    step="0.01"
+    onChange={(e) => setAmount(parseFloat(e.target.value))}
+    className="slider"
+    style={{
+      cursor: 'pointer',
+      background: 'linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(255,154,0,1) 50%, rgba(208,222,33,1) 100%)',
+      border: '2px solid black',
+      boxShadow: 'inset 0 0 5px #000',
+    }}
+  />
+  <button
+    className="btn mt-4"
+    onClick={onClick}
+    disabled={!publicKey}
+    style={{
+      background: 'linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(255,154,0,1) 50%, rgba(208,222,33,1) 100%)',
+      boxShadow: '4px 4px 0px 0px rgba(0,0,0,0.75)',
+      color: 'white',
+      fontFamily: '"Courier New", Courier, monospace',
+      fontSize: '16px',
+      padding: '10px 20px',
+      border: '2px solid black',
+      cursor: publicKey ? 'pointer' : 'default',
+    }}
+  >
+    LOCK COCK
+  </button>
+</div>
+
   );
 };
