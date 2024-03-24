@@ -24,7 +24,13 @@ export const SendTransaction: FC = () => {
       getC7TokenBalance(publicKey, connection);
     }
   }, [publicKey, connection, getC7TokenBalance]);
-
+  const onSliderChange = useCallback((e) => {
+    if (!publicKey) {
+      notify({ type: 'error', message: `Please connect your wallet to use the slider!` });
+      return;
+    }
+    setAmount(parseFloat(e.target.value));
+  }, [publicKey]);
   const onClick = useCallback(async () => {
     let signature: TransactionSignature = "";
 
@@ -92,7 +98,7 @@ Amount: {amount.toLocaleString(undefined, {maximumFractionDigits: 0})} $DIC
     max={balance}
     value={amount}
     step="0.01"
-    onChange={(e) => setAmount(parseFloat(e.target.value))}
+    onChange={onSliderChange} // Updated to use onSliderChange
     className="slider"
     style={{
       cursor: 'pointer',
