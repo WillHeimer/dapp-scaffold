@@ -9,7 +9,6 @@ type NavElementProps = {
     label: string;
     href: string;
     as?: string;
-    scroll?: boolean;
     chipLabel?: string;
     disabled?: boolean;
     navigationStarts?: () => void;
@@ -19,7 +18,6 @@ const NavElement = ({
     label,
     href,
     as,
-    scroll,
     disabled,
     navigationStarts = () => {},
 }: NavElementProps) => {
@@ -42,7 +40,6 @@ const NavElement = ({
         <Link
             href={href}
             as={as}
-            scroll={scroll}
             passHref
             className={cn(
                 'group flex h-full flex-col items-center justify-between',
